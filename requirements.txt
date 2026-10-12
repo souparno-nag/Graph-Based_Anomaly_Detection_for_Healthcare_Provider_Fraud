@@ -1,0 +1,14 @@
+# requirements.txt
+numpy>=1.26
+pandas>=2.2
+scikit-learn>=1.4
+xgboost>=2.0
+shap>=0.48
+networkx>=3.2
+matplotlib>=3.8
+seaborn>=0.13
+torch>=2.2
+torch-geometric>=2.5
+jupyterlab>=4.0
+ipykernel
+kaggle>=1.6
