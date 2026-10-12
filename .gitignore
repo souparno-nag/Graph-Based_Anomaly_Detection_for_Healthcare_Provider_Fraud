@@ -218,3 +218,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Dashboard helper package (overrides the lib/ rule above)
+!dashboard/lib/

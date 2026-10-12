@@ -13,3 +13,5 @@ jupyterlab>=4.0
 ipykernel
 kaggle>=1.6
 pyarrow
+streamlit>=1.50
+plotly>=6.0
