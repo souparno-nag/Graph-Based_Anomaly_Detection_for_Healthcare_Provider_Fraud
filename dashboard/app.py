@@ -11,6 +11,7 @@ pages = [
     st.Page('views/overview.py', title='Overview', icon=':material/dashboard:', default=True),
     st.Page('views/model_performance.py', title='Model performance', icon=':material/monitoring:'),
     st.Page('views/provider_explorer.py', title='Provider explorer', icon=':material/person_search:'),
+    st.Page('views/graph_insights.py', title='Graph insights', icon=':material/hub:'),
 ]
 
 with st.sidebar:
