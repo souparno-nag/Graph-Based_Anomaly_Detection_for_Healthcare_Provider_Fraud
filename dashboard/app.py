@@ -9,6 +9,7 @@ st.set_page_config(
 
 pages = [
     st.Page('views/overview.py', title='Overview', icon=':material/dashboard:', default=True),
+    st.Page('views/model_performance.py', title='Model performance', icon=':material/monitoring:'),
 ]
 
 with st.sidebar:
