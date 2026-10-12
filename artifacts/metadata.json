@@ -1,0 +1,67 @@
+{
+  "created": "2026-10-12T10:07:37",
+  "threshold": 0.35,
+  "baseline_features": [
+    "num_claims",
+    "total_reimbursed",
+    "avg_reimbursed",
+    "std_reimbursed",
+    "num_unique_beneficiaries",
+    "num_unique_physicians",
+    "num_inpatient",
+    "num_outpatient",
+    "avg_num_diagnoses",
+    "avg_num_procedures",
+    "claims_per_beneficiary",
+    "claims_per_physician"
+  ],
+  "graph_features": [
+    "num_claims",
+    "total_reimbursed",
+    "avg_reimbursed",
+    "std_reimbursed",
+    "num_unique_beneficiaries",
+    "num_unique_physicians",
+    "num_inpatient",
+    "num_outpatient",
+    "avg_num_diagnoses",
+    "avg_num_procedures",
+    "claims_per_beneficiary",
+    "claims_per_physician",
+    "community_id",
+    "fraud_neighbor_density"
+  ],
+  "gnn_provider_features": [
+    "num_claims",
+    "total_reimbursed",
+    "avg_reimbursed",
+    "std_reimbursed",
+    "num_unique_beneficiaries",
+    "num_unique_physicians",
+    "num_inpatient",
+    "num_outpatient",
+    "avg_num_diagnoses",
+    "avg_num_procedures",
+    "claims_per_beneficiary",
+    "claims_per_physician",
+    "community_id",
+    "fraud_neighbor_density"
+  ],
+  "gnn_hidden_channels": 64,
+  "gnn_best_val_pr_auc": 0.6338567767766258,
+  "ensemble_weights": {
+    "xgb_baseline": 0.3228,
+    "xgb_graph": 0.3294,
+    "gnn": 0.3478
+  },
+  "split": {
+    "test_size": 0.2,
+    "random_state": 42,
+    "val_frac_of_train": 0.15
+  },
+  "n_communities": 1932,
+  "graph": {
+    "nodes": 226029,
+    "edges": 451205
+  }
+}

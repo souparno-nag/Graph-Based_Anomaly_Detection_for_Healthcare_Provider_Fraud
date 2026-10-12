@@ -1,0 +1,7 @@
+Model,AUC,PR-AUC,Recall (fraud),Precision (fraud)
+XGBoost (baseline),0.936,0.699,0.653,0.611
+XGBoost + graph-density,0.948,0.713,0.653,0.611
+Full GNN,0.956,0.753,0.733,0.649
+Ensemble (average),0.956,0.744,0.723,0.619
+Ensemble (weighted),0.956,0.745,0.723,0.619
+Ensemble (stacked),0.958,0.754,0.594,0.723
