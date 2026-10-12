@@ -41,3 +41,40 @@ def load_gnn():
     model.eval()
     provider_ids = joblib.load(ART / 'id_maps.joblib')['provider']
     return model, data, provider_ids
+
+
+RELATIONS = {
+    ('physician', 'to', 'provider'): 'Physician → provider',
+    ('beneficiary', 'to', 'provider'): 'Beneficiary → provider',
+}
+
+
+@st.cache_data(show_spinner=False, max_entries=128)
+def explain_provider(pid: str) -> dict:
+    """Live what-if tests on the real GNN for one provider.
+
+    - occlusion: score change when one input feature is reset to the average provider
+      (0 after the notebook's standard scaling)
+    - relations: score change when every link of one type is removed. Only links pointing into
+      providers are tested; with one layer the outgoing ones cannot affect provider scores.
+    """
+    model, data, provider_ids = load_gnn()
+    meta = json.loads((ART / 'metadata.json').read_text())
+    i = provider_ids[pid]
+    with torch.no_grad():
+        base = model(data.x_dict, data.edge_index_dict)[i].item()
+
+        occlusion = {}
+        x_dict = dict(data.x_dict)
+        for j, feat in enumerate(meta['gnn_provider_features']):
+            x = data['provider'].x.clone()
+            x[i, j] = 0.0
+            x_dict['provider'] = x
+            occlusion[feat] = base - model(x_dict, data.edge_index_dict)[i].item()
+
+        relations = {}
+        for rel, name in RELATIONS.items():
+            edges = dict(data.edge_index_dict)
+            edges[rel] = torch.empty((2, 0), dtype=torch.long)
+            relations[name] = base - model(data.x_dict, edges)[i].item()
+    return {'score': base, 'occlusion': occlusion, 'relations': relations}

@@ -8,6 +8,7 @@ from lib.charts import (AXIS, BENEFICIARY, FRAUD, INK, INK_2, LABEL_COLORS, LEGI
                         PHYSICIAN, show, style)
 from lib.data import (FEATURE_NAMES, GRAPH_FEATURES, MODELS, load_claims, load_edges, load_metadata,
                       load_scores, load_shap)
+from lib.gnn import explain_provider
 
 scores = load_scores()
 meta = load_metadata()
@@ -134,6 +135,44 @@ with right:
     show(style(fig, height=330, legend=False))
     st.caption(f'Red pushes toward fraud, blue away from it. ◆ marks a graph feature. '
                f'The model starts from {base_value:+.2f} log-odds and adds these contributions.')
+
+# --- Live GNN what-if ---
+st.subheader('Ask the GNN (live)')
+st.markdown('Runs the trained GNN on the full graph right now and asks what moves **this provider\'s** score.')
+if st.button('Run what-if tests', icon=':material/play_arrow:') or st.session_state.get('gnn_done') == pid:
+    st.session_state['gnn_done'] = pid
+    with st.spinner('Running the GNN on 226k nodes...'):
+        res = explain_provider(pid)
+    occ = pd.Series(res['occlusion'])
+    occ = occ.reindex(occ.abs().sort_values(ascending=False).index)[:8][::-1]
+    left, right = st.columns([3, 2])
+    with left:
+        fig = go.Figure(go.Bar(
+            y=[FEATURE_NAMES[f] + (' ◆' if f in GRAPH_FEATURES else '') for f in occ.index], x=occ.values,
+            orientation='h', marker_color=[FRAUD if v > 0 else LEGIT for v in occ.values],
+            hovertemplate='%{y}: score falls by %{x:+.3f} when reset to average<extra></extra>',
+        ))
+        fig.add_vline(x=0, line_color=AXIS, line_width=1)
+        fig.update_xaxes(title='Score drop when reset to average')
+        show(style(fig, height=300, legend=False))
+        st.caption('Each feature is reset to the average provider\'s value, one at a time. Red: this feature '
+                   'was pushing the score up. Blue: it was holding the score down.')
+        if res['score'] > 0.97 or res['score'] < 0.03:
+            st.caption('This score is close to 0 or 1, where the model\'s output is saturated, so no single '
+                       'feature moves it much on its own.')
+    with right:
+        rel = pd.Series(res['relations']).round(3) + 0.0  # + 0.0 avoids printing -0.000
+        fig = go.Figure(go.Bar(
+            x=rel.index, y=rel.values, marker_color=[PHYSICIAN, BENEFICIARY],
+            text=[f'{v:+.3f}' for v in rel.values], textposition='outside', textfont_color=INK_2,
+            hovertemplate='%{x}: score falls by %{y:+.3f} without these links<extra></extra>',
+        ))
+        fig.add_hline(y=0, line_color=AXIS, line_width=1)
+        pad = max(abs(rel).max() * 1.4, 0.02)
+        fig.update_yaxes(title='Score drop without links', range=[min(0, rel.min()) - pad * 0.3, max(0, rel.max()) + pad])
+        show(style(fig, height=300, legend=False))
+        st.caption(f"GNN score {res['score']:.3f}. Bars show how much it falls when one kind of link "
+                   'is removed from the graph.')
 
 # --- Compared with everyone else ---
 st.subheader('Compared with all providers')
