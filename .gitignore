@@ -221,3 +221,6 @@ __marimo__/
 
 # Dashboard helper package (overrides the lib/ rule above)
 !dashboard/lib/
+
+# Paper
+paper/
